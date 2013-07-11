@@ -1,3 +1,6 @@
+var counter = 1;
+var multiple_collisions_flag=false;
+
 /*----------------
  a Coin entity
 ------------------------ */
@@ -17,7 +20,7 @@ game.CoinEntity = me.CollectableEntity.extend({
     // do something when collected
  
     // give some score
-    me.game.HUD.updateItemValue("score", 250);
+       me.game.HUD.updateItemValue("score", 250);
  
     // make sure it cannot be collected "again"
     this.collidable = false;
@@ -31,28 +34,33 @@ game.CoinEntity = me.CollectableEntity.extend({
 /* --------------------------
 an enemy Entity
 ------------------------ */
-game.EnemyEntity = me.ObjectEntity.extend({
+game.BunnyEnemyEntity = me.ObjectEntity.extend({
+
     init: function(x, y, settings) {
         // define this here instead of tiled
-        settings.image = "wheelie_right";
-        settings.spritewidth = 64;
- 
+        settings.image = "bunny";
+        settings.spritewidth = 32; // not sure
+        this.spritewidth = settings.spritewidth;
+        
         // call the parent constructor
         this.parent(x, y, settings);
- 
         this.startX = x;
-        this.endX = x + settings.width - settings.spritewidth;
-        // size of sprite
+        this.endX = this.startX + settings.width;
  
-        // make him start from the right
+        // make him start from the right, check if he should stay still
         this.pos.x = x + settings.width - settings.spritewidth;
         this.walkLeft = true;
- 
+        this.bouncewidth = 180;
+        this.noWalk = this.endX - this.startX - settings.spritewidth < this.bouncewidth;
+
         // walking & jumping speed
-        this.setVelocity(4, 6);
- 
-        // make it collidable
+        this.gravity = 0.6;
+        this.setFriction(0,0.3);
+        this.setVelocity(1, 25);
+        this.setMaxVelocity(4, 15);
+        
         this.collidable = true;
+
         // make it a enemy object
         this.type = me.game.ENEMY_OBJECT;
  
@@ -64,29 +72,54 @@ game.EnemyEntity = me.ObjectEntity.extend({
  
         // res.y >0 means touched by something on the bottom
         // which mean at top position for this one
-        if (this.alive && (res.y > 0) && obj.falling) {
-            this.renderable.flicker(45);
+        if (this.alive && this.pos.y < obj.pos.y && !obj.renderable.flickering)  {
+        console.log(obj.renderable.flickering);
+        
+        console.log(obj);
+        console.log(obj);
+        console.log("Enemy killed. Player Y=" + obj.pos.y  + " < " + this.pos.y);
+        
+        this.alive = false;
+        this.visible = false;
         }
-    },
+        },
  
     // manage the enemy movement
     update: function() {
         // do nothing if not in viewport
         if (!this.inViewport)
             return false;
- 
-        if (this.alive) {
-            if (this.walkLeft && this.pos.x <= this.startX) {
-                this.walkLeft = false;
-            } else if (!this.walkLeft && this.pos.x >= this.endX) {
-                this.walkLeft = true;
-            }
+        
+        // Check when to turn around, walk (x axis movement)
+        if (this.alive && !this.noWalk) {
+            // only change direction on ground
+            if(!this.jumping && !this.falling) {
+                /* Code to find out exact jump with w current settings 
+                console.log(this.lastjump + " - " + this.pos.x + " = " + Math.abs(this.lastjump - this.pos.x));
+                this.lastjump = this.pos.x;
+                */
+                var turnmargin = this.spritewidth/2 + this.bouncewidth;
+                if (this.walkLeft && this.pos.x - turnmargin <= this.startX) {
+                    this.walkLeft = false;
+                } else if (!this.walkLeft && this.pos.x + turnmargin >= this.endX) {
+                    this.walkLeft = true;
+                }
+            }            
             // make it walk
             this.flipX(this.walkLeft);
             this.vel.x += (this.walkLeft) ? -this.accel.x * me.timer.tick : this.accel.x * me.timer.tick;
                  
         } else {
             this.vel.x = 0;
+        }
+        
+        // Handle jump (y axis movement)
+        if (!this.jumping && !this.falling) {
+            // set current vel to the maximum defined value
+            // gravity will then do the rest
+            this.vel.y = -this.maxVel.y * me.timer.tick;
+            // set the jumping flag
+            this.jumping = true;
         }
          
         // check and update movement
@@ -101,42 +134,46 @@ game.EnemyEntity = me.ObjectEntity.extend({
         return false;
     }
 });
-    /*-------------------
-a player entity
--------------------------------- */
+
+
+
 game.PlayerEntity = me.ObjectEntity.extend({
  
-    /* -----
- 
-    constructor
- 
-    ------ */
- 
+    // constructor
     init: function(x, y, settings) {
         // call the constructor
         this.parent(x, y, settings);
  
         // set the default horizontal & vertical speed (accel vector)
         this.setVelocity(3, 15);
+        this.setMaxVelocity(3, 15);
  
         // set the display to follow our position on both axis
-        me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
- 
+        me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH); 
     },
  
-    /* -----
- 
-    update the player pos
- 
-    ------ */
+    // update player pos etc
     update: function() {
- 
+    
+        
+        // force the timer to update
+        me.game.HUD.updateItemValue("timer");
+
+        if (this.alive == false) {
+            if(this.visible == true) {
+                this.visible=false;
+                game.handleDeath();
+           }
+        }
+        
         if (me.input.isKeyPressed('left')) {
             // flip the sprite on horizontal axis
             this.flipX(true);
             // update the entity velocity
             this.vel.x -= this.accel.x * me.timer.tick;
-        } else if (me.input.isKeyPressed('right')) {
+        }
+        else if (me.input.isKeyPressed('right'))
+        {
             // unflip the sprite
             this.flipX(false);
             // update the entity velocity
@@ -144,28 +181,82 @@ game.PlayerEntity = me.ObjectEntity.extend({
         } else {
             this.vel.x = 0;
         }
-        if (me.input.isKeyPressed('jump')) {
-            // make sure we are not already jumping or falling
-            if (!this.jumping && !this.falling) {
+        
+       // Handle jump and high jump
+        var is_jump = me.input.isKeyPressed('jump');
+        var is_high_jump = me.input.isKeyPressed('hi-jump');
+        if(is_high_jump) is_jump = true;
+        
+        if (is_jump) {
+            if(!this.jumping && !this.falling) {        
+                this.setVelocity(this.maxVel.x, 12);
+                if(is_high_jump) 
+                    this.setVelocity(this.maxVel.x, 18);
                 // set current vel to the maximum defined value
                 // gravity will then do the rest
                 this.vel.y = -this.maxVel.y * me.timer.tick;
-                // set the jumping flag
                 this.jumping = true;
             }
- 
         }
- 
+
         // check & update player movement
         this.updateMovement();
- 
+     
+
+     
+     
+     
+        // check for collision
+        var res = me.game.collide(this);
+        
+        //  if(res)
+        //console.log("2}}} obj: " + res.obj.x + " ,res: " + res)
+     
+        if (res && !multiple_collisions_flag) {
+            // if we collide with an enemy
+            if (res.obj.type == me.game.ENEMY_OBJECT) {
+                // check if we jumped on it
+              /*  if ((res.y > 0) && ! this.jumping) {
+                    // bounce (force jump)
+                    this.falling = false;
+                    this.vel.y = -this.maxVel.y * me.timer.tick;
+                    // set the jumping flag
+                    this.jumping = true;
+     
+                } */
+                
+                
+                    if(this.pos.y <= res.obj.pos.y && !this.renderable.flickering){
+                    console.log("Player killed. Enemy Y=" + res.obj.pos.y  + " <= " + this.pos.y);
+                    
+                    
+                   //console.log("just a test: " + this.angleToPoint(res.obj));
+                    
+                    //this.collidable=false; 
+                    
+                    //console.log(res);
+                        if(counter>2) this.alive=false;
+                        
+                        else this.renderable.flicker(20);
+                         
+                        // TO DO NOW
+                        
+                        me.game.HUD.updateItemValue("lives", -1);
+                        counter++;
+                        multiple_collisions_flag=true;
+                    }
+                    // let's flicker in case we touched an enemy
+                
+            }
+        }
+         if(!res) multiple_collisions_flag=false;   // should remember last enemy collided with - small probability of error but still
+     
         // update animation if necessary
         if (this.vel.x!=0 || this.vel.y!=0) {
             // update object animation
             this.parent();
             return true;
         }
-         
         // else inform the engine we did not perform
         // any update (e.g. position, animation)
         return false;
@@ -196,7 +287,54 @@ game.ScoreObject = me.HUD_Item.extend({
  
 });
 
-me.entityPool.add("mainPlayer", game.PlayerEntity);
-me.entityPool.add("CoinEntity", game.CoinEntity);
-me.entityPool.add("EnemyEntity", game.EnemyEntity);
+// Timer HUD item (keeps track of and displays level time)
+game.LevelTimerObject = me.HUD_Item.extend({
+    
+    init: function(x, y) {
+        this.parent(x, y, 0);
+        this.start_time = me.timer.getTime();
+        this.font = new me.BitmapFont("32x32_font", 32);
+        this.font.set("left");
+    },
+    
+    // Draw the timer
+    draw: function(context, x, y) {        
+        this.curr_time = me.timer.getTime();
+        this.value = this.curr_time - this.start_time;
+        this.value = Math.round(this.value / 1000);
+        this.font.draw(context, this.value, this.pos.x + x, this.pos.y + y);
+    }
+ 
+});
+
+// Sharp rock entity
+game.SharpRockEntity = me.ObjectEntity.extend({
+    
+    onCollision : function (res, obj) {
+        obj.alive = false;
+    }
+    
+}); // sharp rock
+
+// HUD Item to show lives left
+game.LivesObject = me.HUD_Item.extend({
+    
+    init: function(x, y) {
+        this.parent(x, y, 0);
+        this.value = 3;
+        this.font = new me.BitmapFont("32x32_font", 32);
+        this.font.set("left");
+    },
+    
+    // Draw the timer
+    draw: function(context, x, y) {
+        this.font.draw(context, "LIVES: " + this.value, this.pos.x + x, this.pos.y + y);
+    }
+});
+
+me.entityPool.add("player", game.PlayerEntity);
+me.entityPool.add("item", game.CoinEntity);
+me.entityPool.add("enemy", game.BunnyEnemyEntity);
+me.entityPool.add("sharpRock", game.SharpRockEntity);
+//me.entityPool.add("ScoreObject", game.ScoreObject);
 // TODO

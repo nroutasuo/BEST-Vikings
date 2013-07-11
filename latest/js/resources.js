@@ -24,9 +24,7 @@ game.resources = [
     /*
      * Maps.
      */
-    {name: "lvl1",              type: "tmx",  src: "data/map/lvl1.tmx"},
-    {name: "testlvl",           type: "tmx",  src: "data/map/testLvl.tmx"},
-    
+    {name: "lvl1",              type: "tmx",  src: "data/map/lvl1.tmx"},    
   {
     name: "32x32_font",
     type: "image",

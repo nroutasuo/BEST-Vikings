@@ -42,21 +42,18 @@ var game = {
    me.input.bindKey(me.input.KEY.LEFT,  "left");
    me.input.bindKey(me.input.KEY.RIGHT, "right");
    me.input.bindKey(me.input.KEY.X,     "jump", true);
-   me.input.bindKey(me.input.KEY.Z,     "hi-jump", true);
-        
+
         // Start the game.
         me.state.change(me.state.PLAY);
-    },
+    }
     
     /* ---
  
    callback when everything is loaded
      
    ---  */
-   // Handle avatar death (called from player update)
-    "handleDeath" : function() {
-        console.log("YOU DIED");
-}
+  
+
 };
 /* the in game stuff*/
 
