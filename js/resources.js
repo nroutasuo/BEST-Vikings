@@ -9,29 +9,42 @@ game.resources = [
      * Graphics.
      */
     // our level tileset
-    {name: "area01_level_tiles",  type:"image", src: "data/img/map/area01_level_tiles.png"},
+    {name: "area01_level_tiles",  	type:"image", src: "data/img/map/area01_level_tiles.png"},
+	{name: "area01_level_tiles2",  	type:"image", src: "data/img/map/area01_level_tiles2.png"},
+	{name: "metatiles32x32",  		type:"image", src: "data/img/map/metatiles32x32.png"},
+	{name: "64VIK",  				type:"image", src: "data/img/map/64VIK.png"},
+	{name: "DECOR", 				type:"image", src: "data/img/map/DECOR.png"},
+	{name: "kangaroo", 				type:"image", src: "data/img/sprite/kangaroo.png"},
+	{name: "area01_level_tiles3", type:"image", src: "data/img/map/area01_level_tiles3.png"},
+  {name: "aussie2", type:"image", src: "data/img/map/aussie2.png"},
+  {name: "moreaussie", type:"image", src: "data/img/map/moreaussie.png"},
     // the main player spritesheet
     {name: "player",     type:"image", src: "data/img/sprite/player.png"},
     // the parallax background
-    {name: "area01_bkg0",         type:"image", src: "data/img/area01_bkg0.png"},
-    {name: "area01_bkg1",         type:"image", src: "data/img/area01_bkg1.png"},
+    {name: "norwayBackground",         type:"image", src: "data/img/norwayBackground.png"},
+    {name: "magicBackground",          type:"image", src: "data/img/magicBackground.png"},
+    	{name: "australiaBackground",         type:"image", src: "data/img/australiaBackground.png"},
+    {name: "screen_bg",       type:"image", src: "data/img/screenbackground.png"}, 
     // the spinning coin spritesheet
     {name: "item",  type:"image", src: "data/img/sprite/item.png"},
     // our enemty entity
     {name: "bunny",       type:"image", src: "data/img/sprite/bunny.png"},
-     
-     
+    {name: "lives-helmet", type:"image", src: "data/img/gui/helmet.png"},
+    {name: "title_screen",       type:"image", src: "data/img/valhalla.png"}, 
+    {name: "scores",       type:"image", src: "data/img/snow.png"},          
     /*
      * Maps.
      */
     {name: "lvl1",              type: "tmx",  src: "data/map/lvl1.tmx"},
+	{name: "lvl2",              type: "tmx",  src: "data/map/lvl2.tmx"},
+	{name: "lvl3",              type: "tmx",  src: "data/map/lvl3.tmx"},
     {name: "testlvl",           type: "tmx",  src: "data/map/testLvl.tmx"},
-    
+   {name: "lvl4",              type: "tmx",  src: "data/map/lvl4.tmx"}, 
   {
     name: "32x32_font",
     type: "image",
     src: "data/img/font/32x32_font.png"
-}
+},
 
 	/* Background music. 
 	 * @example
@@ -42,5 +55,10 @@ game.resources = [
 	 * @example
 	 * {name: "example_sfx", type: "audio", src: "data/sfx/", channel : 2}
 	 */
+	
+	  {name: "jump", type: "audio", src: "data/sfx/", channel : 1}
+   // {name: "dst-inertexponent", type: "audio", src: "data/sfx/", channel : 1},
+    //{name: "dst-inertexponent", type: "audio", src: "data/sfx/", channel : 1},
+    //{name: "dst-inertexponent",  type: "audio", src: "data/sfx/", channel : 1}
 
 ];
