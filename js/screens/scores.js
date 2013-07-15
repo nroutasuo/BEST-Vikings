@@ -11,7 +11,6 @@ game.ScoresScreen = me.ScreenObject.extend(
 		this.font = null;
 		this.right_font = null;
    },
-   
    onResetEvent: function() {
    	this.font = new me.BitmapFont("32x32_font", 32);
    	this.font.set("Arial", 1, "white");

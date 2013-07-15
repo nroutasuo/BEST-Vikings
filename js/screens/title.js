@@ -12,9 +12,14 @@ game.TitleScreen = me.ScreenObject.extend(
 
    },
    onResetEvent: function() {
+   
 		me.input.bindKey(me.input.KEY.A, "Level1", true);
 		me.input.bindKey(me.input.KEY.B, "Level2", true);
 		me.input.bindKey(me.input.KEY.SPACE, "Scores", true);
+		
+                console.log("this: ");
+                console.log(this);
+		//mySprite = new me.SpriteObject (100, 100, me.loader.getImage("sound"));
 		
 		if (this.title == null) {
             // init stuff if not yet done

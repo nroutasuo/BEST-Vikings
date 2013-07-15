@@ -32,6 +32,8 @@ game.resources = [
     {name: "lives-helmet", type:"image", src: "data/img/gui/helmet.png"},
     {name: "title_screen",       type:"image", src: "data/img/valhalla.png"}, 
     {name: "scores",       type:"image", src: "data/img/snow.png"},          
+    {name: "sound-imgOn", type:"image", src: "data/img/gui/soundOn.png"},
+    {name: "sound-imgOff", type:"image", src: "data/img/gui/soundOff.png"},
     /*
      * Maps.
      */
@@ -46,6 +48,12 @@ game.resources = [
     src: "data/img/font/32x32_font.png"
 },
 
+  {
+    name: "24x24_font",
+    type: "image",
+    src: "data/img/font/24x24_font.png"
+},
+
 	/* Background music. 
 	 * @example
 	 * {name: "example_bgm", type: "audio", src: "data/bgm/", channel : 1},
@@ -56,9 +64,13 @@ game.resources = [
 	 * {name: "example_sfx", type: "audio", src: "data/sfx/", channel : 2}
 	 */
 	
-	  {name: "jump", type: "audio", src: "data/sfx/", channel : 1}
-   // {name: "dst-inertexponent", type: "audio", src: "data/sfx/", channel : 1},
-    //{name: "dst-inertexponent", type: "audio", src: "data/sfx/", channel : 1},
+	  {name: "collect", type: "audio", src: "data/sfx/", channel : 1},
+    {name: "bunnyDeath", type: "audio", src: "data/sfx/", channel : 2},       
+   // {name: "kangDeath", type: "audio", src: "data/sfx/", channel : 3},
+    {name: "playerDeath", type: "audio", src: "data/sfx/", channel : 4},
+    {name: "lostLife", type: "audio", src: "data/sfx/", channel : 5},
+    {name: "longJump", type: "audio", src: "data/sfx/", channel : 6},
+    {name: "shortJump", type: "audio", src: "data/sfx/", channel : 7}
     //{name: "dst-inertexponent",  type: "audio", src: "data/sfx/", channel : 1}
 
 ];

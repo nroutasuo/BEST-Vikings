@@ -3,26 +3,25 @@
 
   function addHighScore(name, score) 
   {
-      var scores = localStorage.getItem("highscores");
-      scores = JSON.parse(scores);
-      if(scores == null) scores = new Array();
-      scores.push({name: name, score: score});
-      var ordered = scores.sort(function(a,b){return b.score - a.score});
-      // to do deletete 11th element
-      var new_scores = ordered.slice(0,5);
-      localStorage.setItem("highscores",JSON.stringify(new_scores));
-      
-      /*
-      console.log("display: ");
-      console.log(localStorage.getItem("highscores",JSON.stringify(new_scores)));
-      */  
+  var scores = localStorage.getItem("highscores");
+  scores = JSON.parse(scores);
+  if(scores == null) scores = new Array();
+  scores.push({name: name, score: score});
+  var ordered = scores.sort(function(a,b){return b.score - a.score});
+  // to do deletete 11th element
+  var new_scores = ordered.slice(0,5);
+  localStorage.setItem("highscores",JSON.stringify(new_scores));
+  
+  console.log("display: ");
+  console.log(localStorage.getItem("highscores",JSON.stringify(new_scores)));
+  
   }
 
 var game = {
     // Run on page load.
     "onload" : function () {
         // Initialize the video.
-        if (!me.video.init("screen", 640, 480, true)) {
+        if (!me.video.init("screen", 640, 608, true)) {
             alert("Your browser does not support HTML5 canvas.");
             return;
         }
@@ -55,19 +54,16 @@ var game = {
         me.state.set(me.state.PLAY, new game.PlayScreen());
         me.state.set(me.state.READY, new game.NewgameScreen());
         me.state.set(me.state.GAMEOVER, new game.GameoverScreen());
+        me.state.set(me.state.STORY, new game.StoryScreen());
         me.entityPool.add("player", game.PlayerEntity);
  
         // enable the keyboard
-        me.input.bindKey(me.input.KEY.LEFT,  "left");
-        me.input.bindKey(me.input.KEY.RIGHT, "right");
-        me.input.bindKey(me.input.KEY.X,     "jump", true);
-        me.input.bindKey(me.input.KEY.Z,     "hi-jump", true);
-        
+
          // set a global fading transition for the screen
         me.state.transition("fade", "#000000", 250);
         
         // Start the game.
-        me.state.change(me.state.MENU);
+        me.state.change(me.state.STORY);
     },
     
     // Handle avatar death (called from player update)

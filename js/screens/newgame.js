@@ -1,3 +1,4 @@
+var bind=false;
 game.NewgameScreen = me.ScreenObject.extend({
     
     // Set player name in init and reuse if possible on reset
@@ -5,13 +6,25 @@ game.NewgameScreen = me.ScreenObject.extend({
         this.parent(true);
         this.player_name = "";
         this.title = null;
+        bind=false;
     },
 
     onResetEvent: function() {
         this.startlevel = arguments[0];
         this.font = new me.BitmapFont("32x32_font", 32);
         this.font.set("left");
-		me.input.bindKey(me.input.KEY.ENTER, "continue", true);
+		
+        me.input.unbindKey(me.input.KEY.A);
+        me.input.unbindKey(me.input.KEY.B);
+        me.input.unbindKey(me.input.KEY.SPACE);
+        me.input.unbindKey(me.input.KEY.Z);
+        me.input.unbindKey(me.input.KEY.X);
+        me.input.unbindKey(me.input.KEY.ENTER);
+    
+    
+    
+    me.input.bindKey(me.input.KEY.ENTER, "continue", true);
+        
         
         // Background
         if (this.title == null) {
@@ -21,7 +34,12 @@ game.NewgameScreen = me.ScreenObject.extend({
         
         // General key bindings
         this.focus = true;
-        window.addEventListener('keypress', this.onKeyPress.bind(this));
+        console.log("BIND = " + bind);
+        if(!bind)
+        {
+         window.addEventListener('keypress', this.onKeyPress.bind(this));
+         bind=true;
+        }
     },
 	
 	onDestroyEvent: function() {
@@ -56,6 +74,8 @@ game.NewgameScreen = me.ScreenObject.extend({
         if (!this.focus) {
             return;
         }
+        
+        console.log(bind);
         
         // Special character codes (such as backspace)
          console.log("char: " + e.charCode);

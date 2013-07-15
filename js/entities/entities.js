@@ -3,6 +3,8 @@ var multiple_collisions_flag=false;
 var score_coin = 10;
 var score_enemy = 100;
 var score_time = 1;
+var img_name="soundOn";
+var audio_on = false;
 
 /*----------------
  a Coin entity
@@ -20,7 +22,7 @@ game.CoinEntity = me.CollectableEntity.extend({
    
     onCollision : function () {
     
-    me.audio.play("jump");
+    me.audio.play("collect");
     // give some score
         me.game.HUD.updateItemValue("score", score_coin); 
         // make sure it cannot be collected "again"
@@ -76,7 +78,7 @@ game.BunnyEnemyEntity = me.ObjectEntity.extend({
         if (this.alive && this.pos.y < obj.pos.y && !obj.renderable.flickering)  {
             console.log(obj.renderable.flickering);
             console.log("Enemy killed. Player Y=" + obj.pos.y  + " < " + this.pos.y);
-            
+            me.audio.play("bunnyDeath");
             this.alive = false;
             this.visible = false;
             me.game.HUD.updateItemValue("score", score_enemy); 
@@ -180,7 +182,7 @@ game.KangarooEnemyEntity = me.ObjectEntity.extend({
         if (this.alive && this.pos.y < obj.pos.y && !obj.renderable.flickering)  {
             console.log(obj.renderable.flickering);
             console.log("Enemy killed. Player Y=" + obj.pos.y  + " < " + this.pos.y);
-            
+            me.audio.play("bunnyDeath");  
             this.alive = false;
             this.visible = false;
             me.game.HUD.updateItemValue("score", score_enemy); 
@@ -262,6 +264,13 @@ game.PlayerEntity = me.ObjectEntity.extend({
         // force the timer to update
         me.game.HUD.updateItemValue("timer");
         
+        if (me.input.isKeyPressed('sound')) 
+        {
+         console.log("audioA " + audio_on);
+         if(audio_on) audio_on=false;
+         else audio_on=true;
+        } 
+        
         if (me.input.isKeyPressed('left')) {
             // flip the sprite on horizontal axis
             this.flipX(true);
@@ -286,8 +295,12 @@ game.PlayerEntity = me.ObjectEntity.extend({
         if (is_jump) {
             if(!this.jumping && !this.falling) {        
                 this.setVelocity(this.maxVel.x, 12);
-                if(is_high_jump) 
-                    this.setVelocity(this.maxVel.x, 18);
+                if(is_high_jump){
+                    //me.audio.play("longJump");
+                    this.setVelocity(this.maxVel.x, 18);                        
+                }
+                 //me.audio.play("shortJump"); 
+
                 // set current vel to the maximum defined value
                 // gravity will then do the rest
                 this.vel.y = -this.maxVel.y * me.timer.tick;
@@ -330,11 +343,13 @@ game.PlayerEntity = me.ObjectEntity.extend({
                     
                     //console.log(res);
                     this.lives--;
-                    console.log(this.alive);
+                    console.log(this.alive);                   
                     if(this.lives <= 0 || !this.alive) {
                         game.handleDeath(this);
                     }                        
-                    else this.renderable.flicker(20);
+                    else {this.renderable.flicker(20); 
+                          me.audio.play("lostLife");
+                        }
                      
                     // TO DO NOW
                     
@@ -429,6 +444,40 @@ game.LivesObject = me.HUD_Item.extend({
     }
 });
 
+// SOUND entity
+game.SoundObject = me.HUD_Item.extend({
+    //;
+    
+    init: function(x, y) {
+        this.parent(x, y, 0);
+        this.value = 3;
+        //this.font = new me.BitmapFont("32x32_font", 32);
+        //this.font.set("right");
+        this.image = me.loader.getImage("sound-imgOn");
+        //if(me.audio.isAudioEnable()) audio_on=true;
+        ///else audio_on=false;
+    },
+    
+    draw: function(context, x, y) {
+                  console.log("audio IN / " + audio_on)
+       if(audio_on) {
+            this.image = me.loader.getImage("sound-imgOff");
+            me.audio.disable();
+            }
+      else  {
+            me.audio.enable();
+            this.image = me.loader.getImage("sound-imgOn");
+          }
+    
+            context.drawImage(this.image, this.pos.x + x, this.pos.y + y);
+            
+        // this.font.draw(context, this.value, this.pos.x + x - 50, this.pos.y + y);
+    }
+});
+        
+
+                                                
+
 
 // Entity pool
 me.entityPool.add("player", game.PlayerEntity);
@@ -436,3 +485,4 @@ me.entityPool.add("item", game.CoinEntity);
 me.entityPool.add("enemy", game.BunnyEnemyEntity);
 me.entityPool.add("kangaroo", game.KangarooEnemyEntity);
 me.entityPool.add("sharpRock", game.SharpRockEntity);
+me.entityPool.add("soundButton", game.SoundSpriteObject);

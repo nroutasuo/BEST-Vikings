@@ -1,12 +1,6 @@
-melonJS boilerplate
+BEST Vikings
 -------------------------------------------------------------------------------
 
-features :
-- video autoscaling
-- mobile optimized HTML/CSS
-- swiping disabled on iOS devices
-- debug Panel (if #debug)
+A melonJS based platformer featuring a Viking who must kill enemies with his helmet by positionin himself underneath them when they jump.
 
--------------------------------------------------------------------------------
-Copyright (C) 2011 - 2013, Olivier Biot, Jason Oster
-melonJS is licensed under the [MIT License](http://www.opensource.org/licenses/mit-license.php)
+Created on the BEST summer course '13 in Chisinau, Moldova, by Laurent Van Acker (graphics), Joris Van Hecke, Daniel Prudek, and Noora Routasuo (programming) and Krzysztof Rajda (level design).
